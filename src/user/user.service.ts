@@ -4,10 +4,14 @@ import { AuthDto } from '../auth/dto/auth.dto'
 import { hash } from 'argon2'
 import { UserDto } from './dto/user.dto'
 import { startOfDay, subDays } from 'date-fns'
+import { TaskService } from '../task/task.service'
 
 @Injectable()
 export class UserService {
-	constructor(private prisma: PrismaService) {}
+	constructor(
+		private prisma: PrismaService,
+		private taskService: TaskService
+	) {}
 
 	getById(id: string) {
 		return this.prisma.user.findUnique({
@@ -24,12 +28,7 @@ export class UserService {
 		const profile = await this.getById(id)
 		if (profile) {
 			const totalTasks = profile.tasks.length
-			const completedTasks = await this.prisma.task.count({ //TODO: move to task service
-				where: {
-					userId: id,
-					isCompleted: true
-				}
-			})
+			const completedTasks = await this.taskService.getCompleted(id);
 			const today = startOfDay(new Date())
 			const lastWeekStart = startOfDay(subDays(new Date(), 7))
 			const todayTasks = await this.prisma.task.count({
