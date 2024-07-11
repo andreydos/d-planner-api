@@ -24,8 +24,30 @@ export class UserService {
 		})
 	}
 
+	getUserWithTasksById(id: string) {
+		return this.prisma.user.findUnique({
+			where: {
+				id
+			},
+			include: {
+				tasks: true
+			}
+		})
+	}
+
+	getUserIntervalsCountByUserId(id: string) {
+		return this.prisma.user.findUnique({
+			where: {
+				id
+			},
+			select: {
+				intervalsCount: true
+			}
+		})
+	}
+
 	async getProfile(id: string) {
-		const profile = await this.getById(id)
+		const profile = await this.getUserWithTasksById(id)
 		if (profile) {
 			const totalTasks = profile.tasks.length
 			const completedTasks = await this.taskService.getCompleted(id);

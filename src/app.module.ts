@@ -5,9 +5,11 @@ import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
 import { UserModule } from './user/user.module'
 import { TaskModule } from './task/task.module'
+import { TimeBlockModule } from './time-block/time-block.module'
+import { TimerModule } from './timer/timer.module'
 
 @Module({
-	imports: [ConfigModule.forRoot(), AuthModule, UserModule, TaskModule],
+	imports: [ConfigModule.forRoot(), AuthModule, UserModule, TaskModule, TimeBlockModule, TimerModule],
 	controllers: [AppController],
 	providers: [AppService]
 })

@@ -12,6 +12,7 @@ export class TaskDto {
 	createdAt?: Date
 
 	@IsBoolean()
+	@IsOptional()
 	isCompleted: boolean
 
 	@IsEnum(Priority)
