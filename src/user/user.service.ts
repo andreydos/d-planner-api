@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma.service'
 import { AuthDto } from '../auth/dto/auth.dto'
 import { hash } from 'argon2'
 import { UserDto } from './dto/user.dto'
-import { startOfDay, subDays } from 'date-fns'
+import { startOfDay, subDays, endOfDay } from 'date-fns'
 import { TaskService } from '../task/task.service'
 
 @Injectable()
@@ -51,13 +51,16 @@ export class UserService {
 		if (profile) {
 			const totalTasks = profile.tasks.length
 			const completedTasks = await this.taskService.getCompleted(id);
-			const today = startOfDay(new Date())
+			const now = new Date()
+			const startOfTodayUTC = startOfDay(now);
+			const endOfTodayUTC = endOfDay(now);
 			const lastWeekStart = startOfDay(subDays(new Date(), 7))
 			const todayTasks = await this.prisma.task.count({
 				where: {
 					userId: id,
 					createdAt: {
-						gte : today.toISOString()
+						 gte: startOfTodayUTC.toISOString(),
+						 lt: endOfTodayUTC.toISOString(),
 					}
 				}
 			})
@@ -76,7 +79,7 @@ export class UserService {
 			return {
 				user: userProfile,
 				statistics: [
-					{label: 'Today', value: totalTasks},
+					{label: 'Total', value: totalTasks},
 					{label: 'Completed tasks', value: completedTasks},
 					{label: 'Today tasks', value: todayTasks},
 					{label: 'Week tasks', value: lastWeekTasks},

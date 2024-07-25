@@ -9,6 +9,7 @@ export class TaskDto {
 
 	@IsDate()
 	@IsOptional()
+	@Transform(({ value }) => (value ? new Date(value) : undefined), { toClassOnly: true })
 	createdAt?: Date
 
 	@IsBoolean()
