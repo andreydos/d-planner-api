@@ -5,22 +5,24 @@ import { AuthDto } from './dto/auth.dto'
 import { verify } from 'argon2'
 import { Response } from 'express'
 import { CookieOptions } from 'express-serve-static-core'
+import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class AuthService {
+	constructor(
+		private readonly jwt: JwtService,
+		private readonly userService: UserService,
+		private configService: ConfigService,
+	) {}
+
 	REFRESH_TOKEN_NAME = 'refreshToken'
 	EXPIRE_DAY_REFRESH_TOKEN = 1
 	BASE_COOKIE_OPTIONS = {
 		httpOnly: true,
-		domain: 'localhost', // todo: get production domain from .env
-		secure: true,
-		sameSite: 'none', // todo: lax in production
+		domain: this.configService.get('PRODUCTION_DOMAIN'),
+		secure: false,
+		sameSite: this.configService.get('COOKIE_SAME_SITE_MODE'), // lax in production
 	} as CookieOptions
-
-	constructor(
-		private readonly jwt: JwtService,
-		private readonly userService: UserService,
-	) {}
 
 	async login(dto: AuthDto) {
 		const {password, ...user} = await this.validateUser(dto);
