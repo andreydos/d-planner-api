@@ -8,7 +8,14 @@ async function bootstrap() {
 	app.setGlobalPrefix('api')
 	app.use(cookieParser())
 	app.enableCors({
-		origin: 'http://localhost:3002',
+		origin: (origin, callback) => {
+			const allowedOrigins = ['http://localhost:3002', 'http://localhost:8088', 'http://193.22.147.125:8088', 'https://193.22.147.125:8088'];
+			if (allowedOrigins.includes(origin) || !origin) {
+				callback(null, true) // allowed
+			} else {
+				callback(new Error('Not allowed by CORS')) // not allowed
+			}
+		},
 		credentials: true,
 		exposedHeaders: 'set-cookie'
 	})
